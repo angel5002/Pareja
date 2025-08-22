@@ -111,7 +111,11 @@ st.markdown(HEART_CSS, unsafe_allow_html=True)
 with st.sidebar:
     st.markdown("### 🎯 Personaliza tu app")
     your_name = st.text_input("Tu nombre", value="Ángel")
-    partner_name = st.text_input("Nombre de tu pareja", value="Ida")
+    partner_name = st.text_input
+    heart_rain = st.toggle("🌧️ Lluvia de corazones", value=True)
+    show_balloons = st.toggle("🎈 Confetti / Globos al abrir", value=True)
+
+# Aplicar color elegido al CSS root
 st.markdown(f"""
 <style>
 :root {{
@@ -164,38 +168,16 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs(["🏠 Inicio", "🖼️ Recuerdos", "�
 # Inicio
 # -------------------------
 with tab1:
-    days = (date.today() - start_date).days
-    st.markdown(f"""
-    <div class="love-card">
-      <h3 style="margin-top:0">Contador de días juntos</h3>
-      <p style="font-size: 24px; margin: 0;">Han pasado <b style="color: var(--love-color);">{days}</b> días desde <b>{start_date.strftime('%d/%m/%Y')}</b>.</p>
-      <p class="small">Cada día cuenta ✨</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("")
-    st.markdown("""
-    <div class="love-card">
-      <h3 style="margin-top:0">Ideas para hoy</h3>
-      <p>Elige una idea al azar para una mini-cita:</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    ideas = [
-        "Cine en casa con palomitas y mantita",
-        "Paseo al atardecer y fotos juntos",
-        "Cocinar una receta nueva (o fallarla con estilo 😅)",
-        "Escribirnos cartas a mano y leerlas",
-        "Ver fotos viejas y contar anécdotas",
-        "Hacer un picnic interior",
-        "Baile improvisado de 10 minutos",
-        "Listar 5 cosas que amamos del otro"
-    ]
-    if st.button("🎲 Sugerir plan al azar"):
-        st.success("Plan: " + random.choice(ideas))
-
-# -------------------------
-# Recuerdos (galería simple)
+    # Cuenta regresiva hacia 24/08/2025
+    target_date = date(2025, 8, 24)
+    remaining = (target_date - date.today()).days
+    date_str = target_date.strftime('%d/%m/%Y')
+    if remaining > 0:
+        msg = f"Faltan <b style=\"color: var(--love-color);\">{remaining}</b> días para <b>{date_str}</b>."
+    elif remaining == 0:
+        msg = f"<b>¡Hoy es el día especial!</b> ({date_str})"
+    else:
+        msg = f"Pasaron <b style=\"co
 # -------------------------
 with tab2:
     st.markdown('<div class="love-card"><h3 style="margin-top:0">Nuestra galería</h3><p class="small">Sube fotos (se muestran centradas y adaptadas al ancho).</p></div>', unsafe_allow_html=True)
@@ -263,28 +245,4 @@ with tab4:
                 """).strip()
                 source_label = "Gustavo Adolfo Bécquer — dominio público"
 
-        st.markdown(f'<div class="poem love-card">{final_poem}</div>', unsafe_allow_html=True)
-        st.caption(source_label)
-    else:
-        st.info("Activa 'Mostrar poema' en la barra lateral para verlo aquí.")
-
-# -------------------------
-# Música
-# -------------------------
-with tab5:
-    st.markdown('<div class="love-card"><h3 style="margin-top:0">Nuestra música</h3></div>', unsafe_allow_html=True)
-    if yt_link.strip():
-        st.video(yt_link.strip())
-    if spotify_embed.strip():
-        # Debe ser el iframe completo pegado desde Spotify
-        st.markdown(spotify_embed, unsafe_allow_html=True)
-    if not yt_link.strip() and not spotify_embed.strip():
-        st.info("Pega un enlace de YouTube o un iframe de Spotify en la barra lateral.")
-
-# -------------------------
-# Footer pequeño
-# -------------------------
-st.markdown(
-    '<p class="small" style="text-align:center; margin-top: 28px;">Hecho con 💖 en Streamlit</p>', 
-    unsafe_allow_html=True
-)
+        st.markdown(f'<div class="poem love-card">{final_poem}</div>', uns
