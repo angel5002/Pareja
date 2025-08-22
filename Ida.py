@@ -82,7 +82,7 @@ if show_balloons:
 # -------------------------
 # Tabs
 # -------------------------
-tab1, tab2, tab3, tab4, tab5 = st.tabs(["🏠 Inicio", "🖼️ Recuerdos", "💌 Carta", "📜 Poema", "🎶 Música"])
+tab1, tab3, tab4, tab5 = st.tabs(["🏠 Inicio", "💌 Carta", "📜 Poema", "🎶 Música"])
 
 # -------------------------
 # Inicio (Cuenta regresiva hasta 24/08/2025)
