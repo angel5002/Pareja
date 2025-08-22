@@ -7,6 +7,24 @@ import random
 import textwrap
 
 # -------------------------
+# Utils: imágenes centradas y base64
+# -------------------------
+def _render_centered_image(pil_image, caption: str | None = None, max_width_pct: int = 100):
+    from io import BytesIO
+    import base64 as _b64
+    buf = BytesIO()
+    # Guardamos como PNG para consistencia
+    pil_image.save(buf, format="PNG")
+    b64 = _b64.b64encode(buf.getvalue()).decode()
+    cap_html = f'<div class="small" style="opacity:.85;margin-top:6px;text-align:center">{caption}</div>' if caption else ""
+    st.markdown(
+        f'''<div style="display:flex;justify-content:center">
+              <img src="data:image/png;base64,{b64}" style="max-width:{max_width_pct}%; border-radius:12px" />
+            </div>{cap_html}''',
+        unsafe_allow_html=True,
+    )
+
+# -------------------------
 # CONFIG GLOBAL
 # -------------------------
 st.set_page_config(
@@ -193,15 +211,16 @@ with tab1:
 # Recuerdos (galería simple)
 # -------------------------
 with tab2:
-    st.markdown('<div class="love-card"><h3 style="margin-top:0">Nuestra galería</h3><p class="small">Sube fotos (se muestran redimensionadas).</p></div>', unsafe_allow_html=True)
+    st.markdown('<div class="love-card"><h3 style="margin-top:0">Nuestra galería</h3><p class="small">Sube fotos (se muestran centradas y adaptadas al ancho).</p></div>', unsafe_allow_html=True)
     imgs = st.file_uploader("Sube 1 o más imágenes", type=["png","jpg","jpeg","webp"], accept_multiple_files=True)
     if imgs:
         cols = st.columns(3)
         for i, up in enumerate(imgs):
             try:
                 im = Image.open(up).convert("RGB")
-                im.thumbnail((800, 800))
-                cols[i % 3].image(im, use_column_width=True, caption=up.name)
+                im.thumbnail((1200, 1200))  # un poco mayor para pantallas grandes
+                with cols[i % 3]:
+                    _render_centered_image(im, caption=up.name, max_width_pct=100)
             except Exception as e:
                 st.error(f"No pude mostrar {up.name}: {e}")
 
