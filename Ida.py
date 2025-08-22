@@ -1,10 +1,10 @@
 import streamlit as st
-from datetime import date, datetime
+from datetime import date
 from io import BytesIO
 from PIL import Image
 import base64
-import random
 import textwrap
+import streamlit.components.v1 as components
 
 # -------------------------
 # Utils: imágenes centradas y base64
@@ -85,21 +85,28 @@ if show_balloons:
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["🏠 Inicio", "🖼️ Recuerdos", "💌 Carta", "📜 Poema", "🎶 Música"])
 
 # -------------------------
-# Inicio (Contador hasta fecha fija)
+# Inicio (Cuenta regresiva hasta 24/08/2025)
 # -------------------------
 with tab1:
     target_date = date(2025, 8, 24)
-    days_remaining = (target_date - date.today()).days
+    remaining = (target_date - date.today()).days
+    if remaining > 0:
+        msg = f"Faltan <b style=\"color: var(--love-color);\">{remaining}</b> días para el <b>{target_date.strftime('%d/%m/%Y')}</b>."
+    elif remaining == 0:
+        msg = f"<b>¡Hoy es el día especial!</b> ({target_date.strftime('%d/%m/%Y')})"
+    else:
+        msg = f"Pasaron <b style=\"color: var(--love-color);\">{abs(remaining)}</b> días desde <b>{target_date.strftime('%d/%m/%Y')}</b>."
+
     st.markdown(f"""
     <div class="love-card">
-      <h3 style="margin-top:0">Contador hacia nuestro día especial</h3>
-      <p style="font-size: 22px; margin: 0;">Faltan <b style="color: var(--love-color);">{days_remaining}</b> días para el <b>{target_date.strftime('%d/%m/%Y')}</b>.</p>
+      <h3 style="margin-top:0">Cuenta regresiva</h3>
+      <p style="font-size: 22px; margin: 0;">{msg}</p>
       <p class="small">Cada día cuenta ✨</p>
     </div>
     """, unsafe_allow_html=True)
 
 # -------------------------
-# Recuerdos (foto fija en vez de upload)
+# Recuerdos (foto fija)
 # -------------------------
 with tab2:
     st.markdown('<div class="love-card"><h3 style="margin-top:0">Nuestra foto</h3></div>', unsafe_allow_html=True)
@@ -145,28 +152,19 @@ with tab4:
     st.caption("Mariano Melgar — Amor constante")
 
 # -------------------------
-# Música (YouTube auto)
+# Música (YouTube autoplay)
 # -------------------------
 with tab5:
     st.markdown('<div class="love-card"><h3 style="margin-top:0">Nuestra música</h3></div>', unsafe_allow_html=True)
-    # Autoplay funciona en la mayoría de navegadores si el video inicia silenciado (mute=1)
     yt_id = "oQnvA564Y7A"
-    yt_params = (
-        "autoplay=1&mute=1&controls=1&rel=0&modestbranding=1"
-        "&loop=1&playlist=" + yt_id  # loop requiere playlist=ID
-    )
-    yt_embed = f"https://www.youtube.com/embed/{yt_id}?{yt_params}"
-
-    responsive_iframe = f'''
-    <div class="love-card" style="padding:0">
-      <div style="position:relative;padding-top:56.25%">
-        <iframe src="{yt_embed}" title="YouTube" frameborder="0"
-                allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen
+    yt_url = f"https://www.youtube.com/embed/{yt_id}?autoplay=1&mute=1&list=RDwMnRchmvQNA&index=2"
+    iframe = f'''
+    <div style="position:relative;padding-top:56.25%">
+        <iframe src="{yt_url}" title="YouTube" frameborder="0"
+                allow="autoplay; encrypted-media" allowfullscreen
                 style="position:absolute;top:0;left:0;width:100%;height:100%"></iframe>
-      </div>
-    </div>
-    '''
-    st.markdown(responsive_iframe, unsafe_allow_html=True)
-    st.caption("La reproducción inicia en silencio por políticas del navegador. Toca el reproductor para activar el sonido.")
+    </div>'''
+    st.markdown(iframe, unsafe_allow_html=True)
+    st.info("La reproducción inicia en silencio por políticas del navegador. Pulsa el reproductor para activar el sonido.")
 
 st.markdown('<p class="small" style="text-align:center; margin-top: 28px;">Hecho con 💖 en Streamlit</p>', unsafe_allow_html=True)
