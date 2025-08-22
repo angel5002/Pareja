@@ -5,6 +5,7 @@ from PIL import Image
 import base64
 import random
 import textwrap
+import streamlit.components.v1 as components
 
 # -------------------------
 # Utils: imágenes centradas y base64
@@ -108,23 +109,9 @@ st.markdown(HEART_CSS, unsafe_allow_html=True)
 # SIDEBAR - Preferencias
 # -------------------------
 with st.sidebar:
-    st.markdown("### 🎯 Personaliza tu detalle")
+    st.markdown("### 🎯 Personaliza tu app")
     your_name = st.text_input("Tu nombre", value="Ángel")
     partner_name = st.text_input("Nombre de tu pareja", value="Ida")
-    start_date = st.date_input("Nuestra fecha especial (aniversario / primer día)", value=date(2023, 8, 21))
-    main_color = st.color_picker("Color principal", value="#e91e63")
-    heart_rain = st.toggle("🌧️ Lluvia de corazones", value=True)
-    show_balloons = st.toggle("🎈 Confetti / Globos al abrir", value=True)
-    st.markdown("---")
-    show_poem = st.checkbox("📜 Mostrar poema", value=True)
-    poem_choice = st.radio("Elige fuente del poema:", ["Benedetti (fragmento breve)", "Poema dominio público (Bécquer)"], index=0)
-    user_poem = st.text_area("¿Quieres pegar tu propio poema o fragmento?", placeholder="Pega aquí un poema propio o un fragmento del que tengas permiso.")
-    st.markdown("---")
-    st.markdown("### 🎵 Música")
-    yt_link = st.text_input("Enlace de YouTube (opcional)", placeholder="https://www.youtube.com/watch?v=...")
-    spotify_embed = st.text_input("Embed de Spotify (opcional)", placeholder="Pega un <iframe ...> de Spotify aquí")
-
-# Aplicar color elegido al CSS root
 st.markdown(f"""
 <style>
 :root {{
