@@ -5,7 +5,6 @@ from PIL import Image
 import base64
 import random
 import textwrap
-import streamlit.components.v1 as components
 
 # -------------------------
 # Utils: imágenes centradas y base64
@@ -14,7 +13,6 @@ def _render_centered_image(pil_image, caption: str | None = None, max_width_pct:
     from io import BytesIO
     import base64 as _b64
     buf = BytesIO()
-    # Guardamos como PNG para consistencia
     pil_image.save(buf, format="PNG")
     b64 = _b64.b64encode(buf.getvalue()).decode()
     cap_html = f'<div class="small" style="opacity:.85;margin-top:6px;text-align:center">{caption}</div>' if caption else ""
@@ -26,8 +24,6 @@ def _render_centered_image(pil_image, caption: str | None = None, max_width_pct:
     )
 
 # -------------------------
-# CONFIG GLOBAL
-# -------------------------
 st.set_page_config(
     page_title="Para nosotros 💖",
     page_icon="💖",
@@ -35,92 +31,37 @@ st.set_page_config(
 )
 
 # -------------------------
-# ESTILOS (CSS) - Corazones animados y tema
+# ESTILOS (CSS)
 # -------------------------
 HEART_CSS = """
 <style>
-/* Fuente y colores de base (se ajustan con el color principal en runtime via style attr) */
-:root {
-  --love-color: #e91e63;
-}
-
-/* Fija el ancho del contenedor central para estética */
+:root { --love-color: #e91e63; }
 .block-container {max-width: 900px}
-
-/* Botoncitos más redondeados */
 .stButton>button { border-radius: 14px; padding: 0.6rem 1rem; font-weight: 600; }
-
-/* Tarjetas suaves */
-.love-card {
-  background: rgba(255,255,255,0.75);
-  border: 1px solid rgba(0,0,0,0.04);
-  border-radius: 18px;
-  padding: 1rem 1.1rem;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.05);
-}
-
-/* Lluvia de corazones */
-@keyframes float {
-  0%   {transform: translateY(0)    rotate(0deg);   opacity: 1;}
-  100% {transform: translateY(-120vh) rotate(360deg); opacity: 0;}
-}
-.heart-container {
-  position: fixed;
-  bottom: -10vh;
-  left: 0; right: 0;
-  pointer-events: none;
-  z-index: 0;
-}
-.heart {
-  position: absolute;
-  bottom: -10vh;
-  color: var(--love-color);
-  font-size: 18px;
-  animation: float linear forwards;
-  opacity: 0.85;
-}
-.hero-title {
-  font-weight: 800;
-  font-size: 36px;
-  margin-bottom: 6px;
-}
-.hero-sub {
-  opacity: 0.8;
-  margin-top: 0px;
-}
-.badge {
-  display: inline-block; padding: 6px 10px; border-radius: 999px;
-  background: rgba(0,0,0,0.06);
-  font-size: 12px; font-weight: 600;
-}
-.small {
-  font-size: 13px; opacity: 0.8;
-}
-.poem {
-  font-style: italic;
-  white-space: pre-wrap;
-}
+.love-card { background: rgba(255,255,255,0.75); border: 1px solid rgba(0,0,0,0.04); border-radius: 18px; padding: 1rem 1.1rem; box-shadow: 0 8px 24px rgba(0,0,0,0.05); }
+.hero-title { font-weight: 800; font-size: 36px; margin-bottom: 6px; }
+.hero-sub { opacity: 0.8; margin-top: 0px; }
+.badge { display: inline-block; padding: 6px 10px; border-radius: 999px; background: rgba(0,0,0,0.06); font-size: 12px; font-weight: 600; }
+.small { font-size: 13px; opacity: 0.8; }
+.poem { font-style: italic; white-space: pre-wrap; }
 </style>
 """
-
 st.markdown(HEART_CSS, unsafe_allow_html=True)
 
 # -------------------------
-# SIDEBAR - Preferencias
+# SIDEBAR
 # -------------------------
 with st.sidebar:
-    st.markdown("### 🎯 Personaliza tu app")
+    st.markdown("### 🎯 Personaliza tu detalle")
     your_name = st.text_input("Tu nombre", value="Ángel")
-    partner_name = st.text_input
+    partner_name = st.text_input("Nombre de tu pareja", value="Ida")
+    main_color = st.color_picker("Color principal", value="#e91e63")
     heart_rain = st.toggle("🌧️ Lluvia de corazones", value=True)
     show_balloons = st.toggle("🎈 Confetti / Globos al abrir", value=True)
 
-# Aplicar color elegido al CSS root
 st.markdown(f"""
 <style>
-:root {{
-  --love-color: {main_color};
-}}
+:root {{ --love-color: {main_color}; }}
 </style>
 """, unsafe_allow_html=True)
 
@@ -135,70 +76,45 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Confetti opcional
 if show_balloons:
     st.balloons()
 
 # -------------------------
-# Lluvia de corazones
-# -------------------------
-def heart_rain_html(n=18):
-    import random
-    hearts = []
-    for i in range(n):
-        left = random.randint(0, 100)
-        duration = random.uniform(8, 16)
-        delay = random.uniform(0, 8)
-        size = random.randint(16, 34)
-        emoji = random.choice(["❤️","💗","💖","💘","💝"])
-        hearts.append(
-            f'<span class="heart" style="left:{left}%; animation-duration:{duration}s; animation-delay:{delay}s; font-size:{size}px">{emoji}</span>'
-        )
-    return f'<div class="heart-container">{"".join(hearts)}</div>'
-
-if heart_rain:
-    st.markdown(heart_rain_html(), unsafe_allow_html=True)
-
-# -------------------------
-# Tabs / Secciones
+# Tabs
 # -------------------------
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["🏠 Inicio", "🖼️ Recuerdos", "💌 Carta", "📜 Poema", "🎶 Música"])
 
 # -------------------------
-# Inicio
+# Inicio (Contador hasta fecha fija)
 # -------------------------
 with tab1:
-    # Cuenta regresiva hacia 24/08/2025
     target_date = date(2025, 8, 24)
-    remaining = (target_date - date.today()).days
-    date_str = target_date.strftime('%d/%m/%Y')
-    if remaining > 0:
-        msg = f"Faltan <b style=\"color: var(--love-color);\">{remaining}</b> días para <b>{date_str}</b>."
-    elif remaining == 0:
-        msg = f"<b>¡Hoy es el día especial!</b> ({date_str})"
-    else:
-        msg = f"Pasaron <b style=\"co
-# -------------------------
-with tab2:
-    st.markdown('<div class="love-card"><h3 style="margin-top:0">Nuestra galería</h3><p class="small">Sube fotos (se muestran centradas y adaptadas al ancho).</p></div>', unsafe_allow_html=True)
-    imgs = st.file_uploader("Sube 1 o más imágenes", type=["png","jpg","jpeg","webp"], accept_multiple_files=True)
-    if imgs:
-        cols = st.columns(3)
-        for i, up in enumerate(imgs):
-            try:
-                im = Image.open(up).convert("RGB")
-                im.thumbnail((1200, 1200))  # un poco mayor para pantallas grandes
-                with cols[i % 3]:
-                    _render_centered_image(im, caption=up.name, max_width_pct=100)
-            except Exception as e:
-                st.error(f"No pude mostrar {up.name}: {e}")
+    days_remaining = (target_date - date.today()).days
+    st.markdown(f"""
+    <div class="love-card">
+      <h3 style="margin-top:0">Contador hacia nuestro día especial</h3>
+      <p style="font-size: 22px; margin: 0;">Faltan <b style="color: var(--love-color);">{days_remaining}</b> días para el <b>{target_date.strftime('%d/%m/%Y')}</b>.</p>
+      <p class="small">Cada día cuenta ✨</p>
+    </div>
+    """, unsafe_allow_html=True)
 
 # -------------------------
-# Carta (con descarga)
+# Recuerdos (foto fija en vez de upload)
+# -------------------------
+with tab2:
+    st.markdown('<div class="love-card"><h3 style="margin-top:0">Nuestra foto</h3></div>', unsafe_allow_html=True)
+    try:
+        fixed_img = Image.open("/mnt/data/20550aca-5191-40a1-8150-e13093aca952.png").convert("RGB")
+        _render_centered_image(fixed_img, caption="Nuestro momento 💞", max_width_pct=70)
+    except Exception as e:
+        st.error(f"No se pudo cargar la imagen: {e}")
+
+# -------------------------
+# Carta
 # -------------------------
 with tab3:
-    st.markdown('<div class="love-card"><h3 style="margin-top:0">Carta para ' + partner_name + '</h3><p class="small">Escríbela y descárgala.</p></div>', unsafe_allow_html=True)
-    default_text = textwrap.dedent(f"""
+    st.markdown('<div class="love-card"><h3 style="margin-top:0">Carta</h3></div>', unsafe_allow_html=True)
+    default_text = f"""
     {partner_name},
 
     Gracias por estar. Por los días simples y los días extraordinarios.
@@ -206,43 +122,51 @@ with tab3:
 
     Con cariño,
     {your_name}
-    """).strip()
-
+    """
     letter = st.text_area("Escribe tu carta aquí", height=240, value=default_text)
-    if st.button("✨ Añadir un cierre dulce"):
-        letter += "\n\nP.D.: Si el mundo se apaga, prometo ser tu luz."
-
-    # Descargar como TXT
     buf = BytesIO(letter.encode("utf-8"))
     st.download_button("💾 Descargar carta (.txt)", data=buf, file_name="carta_para_ti.txt", mime="text/plain")
 
 # -------------------------
-# Poema
+# Poema (Amor constante)
 # -------------------------
 with tab4:
-    if show_poem:
-        st.markdown('<div class="love-card"><h3 style="margin-top:0">Poema</h3></div>', unsafe_allow_html=True)
+    poema_text = textwrap.dedent("""
+    mi corazón contigo está constante;
+    ni la distancia, ni el rigor del hado
+    harán que de tu amor me aparte un instante.
 
-        final_poem = ""
-        source_label = ""
+    Siempre firme, tenaz y enamorado,
+    te adoraré con fuego delirante;
+    y aunque la suerte me condene al llanto,
+    serás mi único bien, mi único encanto.
+    """).strip()
+    st.markdown(f'<div class="poem love-card">{poema_text}</div>', unsafe_allow_html=True)
+    st.caption("Mariano Melgar — Amor constante")
 
-        if user_poem.strip():
-            final_poem = user_poem.strip()
-            source_label = "Poema proporcionado por ti"
-        else:
-            if poem_choice == "Benedetti (fragmento breve)":
-                # Fragmento < 90 caracteres (p. ej. de "Corazón coraza")
-                final_poem = "Porque te tengo y no, porque te pienso y no, porque te sueño."
-                source_label = "Mario Benedetti — fragmento breve"
-                st.info("Para el poema completo de Benedetti, pega tu fragmento en el cuadro de la izquierda (si tienes permiso) o elige 'Bécquer' para un poema completo en dominio público.")
-            else:
-                # Bécquer (dominio público)
-                final_poem = textwrap.dedent("""
-                ¿Qué es poesía?, dices mientras clavas
-                en mi pupila tu pupila azul.
-                ¿Qué es poesía? ¿Y tú me lo preguntas?
-                Poesía... eres tú.
-                """).strip()
-                source_label = "Gustavo Adolfo Bécquer — dominio público"
+# -------------------------
+# Música (YouTube auto)
+# -------------------------
+with tab5:
+    st.markdown('<div class="love-card"><h3 style="margin-top:0">Nuestra música</h3></div>', unsafe_allow_html=True)
+    # Autoplay funciona en la mayoría de navegadores si el video inicia silenciado (mute=1)
+    yt_id = "oQnvA564Y7A"
+    yt_params = (
+        "autoplay=1&mute=1&controls=1&rel=0&modestbranding=1"
+        "&loop=1&playlist=" + yt_id  # loop requiere playlist=ID
+    )
+    yt_embed = f"https://www.youtube.com/embed/{yt_id}?{yt_params}"
 
-        st.markdown(f'<div class="poem love-card">{final_poem}</div>', uns
+    responsive_iframe = f'''
+    <div class="love-card" style="padding:0">
+      <div style="position:relative;padding-top:56.25%">
+        <iframe src="{yt_embed}" title="YouTube" frameborder="0"
+                allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen
+                style="position:absolute;top:0;left:0;width:100%;height:100%"></iframe>
+      </div>
+    </div>
+    '''
+    st.markdown(responsive_iframe, unsafe_allow_html=True)
+    st.caption("La reproducción inicia en silencio por políticas del navegador. Toca el reproductor para activar el sonido.")
+
+st.markdown('<p class="small" style="text-align:center; margin-top: 28px;">Hecho con 💖 en Streamlit</p>', unsafe_allow_html=True)
