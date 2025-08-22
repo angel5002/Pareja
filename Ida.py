@@ -89,7 +89,7 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs(["🏠 Inicio", "🖼️ Recuerdos", "�
 # -------------------------
 with tab1:
     target_date = date(2025, 8, 24)
-    remaining = (target_date - date.today()).days
+    remaining = (target_date - date.today()).days + 1
     if remaining > 0:
         msg = f"Faltan <b style=\"color: var(--love-color);\">{remaining}</b> días para el <b>{target_date.strftime('%d/%m/%Y')}</b>."
     elif remaining == 0:
@@ -104,17 +104,6 @@ with tab1:
       <p class="small">Cada día cuenta ✨</p>
     </div>
     """, unsafe_allow_html=True)
-
-# -------------------------
-# Recuerdos (foto fija)
-# -------------------------
-with tab2:
-    st.markdown('<div class="love-card"><h3 style="margin-top:0">Nuestra foto</h3></div>', unsafe_allow_html=True)
-    try:
-        fixed_img = Image.open("/mnt/data/20550aca-5191-40a1-8150-e13093aca952.png").convert("RGB")
-        _render_centered_image(fixed_img, caption="Nuestro momento 💞", max_width_pct=70)
-    except Exception as e:
-        st.error(f"No se pudo cargar la imagen: {e}")
 
 # -------------------------
 # Carta
